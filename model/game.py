@@ -1,4 +1,22 @@
-class Game():
+from sqlalchemy import Column, Text, String, Integer, DateTime
+from datetime import datetime
+
+from model import Base
+
+class Game(Base):
+    __tablename__ = 'game'
+
+    id: Column(Integer, primary_key=True)
+    title: Column(String(255), nullable=False)
+    thumbnail: Column(Text)
+    short_description: Column(Text)
+    game_url: Column(Text)
+    genre: Column(String(255))
+    platform: Column(String(255))
+    publisher: Column(String(255))
+    developer: Column(String(255))
+    release_date: Column(DateTime)
+
     def __init__(self,
                  id: int,
                  title: str,
@@ -12,7 +30,7 @@ class Game():
                  release_date: str,
                  ):
         """
-        Instancia um jogo
+        Cria um jogo
 
         Arguments:
             id: Id
@@ -26,13 +44,13 @@ class Game():
             developer: Empresa que desenvolveu o jogo
             release_date: Data de lançamento
         """
-        self.id = id or ''
-        self.title = title or ''
-        self.thumbnail = thumbnail or ''
-        self.short_description = short_description or ''
-        self.game_url = game_url or ''
-        self.genre = genre or ''
-        self.platform = platform or ''
-        self.publisher = publisher or ''
-        self.developer = developer or ''
-        self.release_date = release_date or ''
+        self.id = id
+        self.title = title
+        self.thumbnail = thumbnail
+        self.short_description = short_description
+        self.game_url = game_url
+        self.genre = genre
+        self.platform = platform
+        self.publisher = publisher
+        self.developer = developer
+        self.release_date = release_date

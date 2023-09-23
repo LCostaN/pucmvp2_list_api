@@ -5,7 +5,7 @@ import os
 
 # importando os elementos definidos no modelo
 from model.base import Base
-from model.list import List
+from model.game_list import GameList
 from model.game import Game
 
 db_path = "database/"

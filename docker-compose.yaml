@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  list_api:
+    build: .
+    restart: always
+    container_name: mvp2_list_api2
+    ports:
+      - '5001:5000'
+    volumes:
+      - ./:/app
