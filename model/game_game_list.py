@@ -1,10 +1,9 @@
 from model import Base
-from sqlalchemy import Column, Table, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer
 
 # association table
-game_game_list = Table(
-    "game_game_list",
-    Base.metadata,
-    Column("game_id", ForeignKey("game.id"), primary_key=True),
-    Column("game_list_id", ForeignKey("game_list.id"), primary_key=True),
-)
+class GameGameList(Base): 
+    __tablename__ = 'game_game_list'
+
+    game_id = Column(Integer, ForeignKey("game.id"), primary_key=True)
+    game_list_id = Column(Integer, ForeignKey("game_list.id"), primary_key=True)

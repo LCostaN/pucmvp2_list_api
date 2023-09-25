@@ -1,21 +1,20 @@
 from sqlalchemy import Column, Text, String, Integer, DateTime
-from datetime import datetime
 
 from model import Base
 
 class Game(Base):
     __tablename__ = 'game'
 
-    id: Column(Integer, primary_key=True)
-    title: Column(String(255), nullable=False)
-    thumbnail: Column(Text)
-    short_description: Column(Text)
-    game_url: Column(Text)
-    genre: Column(String(255))
-    platform: Column(String(255))
-    publisher: Column(String(255))
-    developer: Column(String(255))
-    release_date: Column(DateTime)
+    id= Column(Integer, primary_key=True)
+    title= Column(String(255), nullable=False)
+    thumbnail= Column(Text)
+    short_description= Column(Text)
+    game_url= Column(Text)
+    genre= Column(String(255))
+    platform= Column(String(255))
+    publisher= Column(String(255))
+    developer= Column(String(255))
+    release_date= Column(DateTime)
 
     def __init__(self,
                  id: int,

@@ -7,7 +7,6 @@ class GameListSchema(BaseModel):
     """ Define como uma nova lista de jogos deve ser representada
     """
     name: str = Field(title="Nome", description="Nome da Lista")
-    user: str = Field(title="Usuário", description="Nome do Usuário criador")
     description: Optional[str] = Field(
         title="Descrição", description="Descrição da Lista")
     is_private: bool = Field(
@@ -26,6 +25,11 @@ class GameListViewSchema(BaseModel):
         title="Descrição", description="Descrição da Lista")
     games: List = Field(
         title='Jogos', description="Jogos incluídos na lista", default=[])
+    
+class GameListDeleteViewSchema(BaseModel):
+    """ Define como a resposta de uma remoção de lista será representada
+    """
+    data: bool = Field(title="Sucesso")
 
 
 class GameListUpdateQuerySchema(BaseModel):
@@ -40,12 +44,9 @@ class GameListUpdateBodySchema(BaseModel):
     Os parâmetros de busca da lista a ser atualizada são definidos em [GameListUpdateQuerySchema]
     """
     name: Optional[str] = Field(title="Nome", description="Nome da Lista")
-    description: Optional[str] = Field(
-        title="Descrição", description="Descrição da Lista")
-    is_private: Optional[bool] = Field(
-        title="Privacidade", description="Define se a lista pode ser visualizada por outros usuário ou somente o criador")
-    games: Optional[List] = Field(
-        title='Jogos', description="Jogos incluídos na lista", default=[])
+    description: Optional[str] = Field(title="Descrição", description="Descrição da Lista")
+    is_private: Optional[bool] = Field(title="Privacidade", description="Define se a lista pode ser visualizada por outros usuário ou somente o criador")
+    games: Optional[List] = Field(title='Jogos', description="Jogos incluídos na lista")
 
 
 class GameListDeleteSchema(BaseModel):

@@ -1,0 +1,95 @@
+[2023-09-25 17:42:11,119] ERROR log_exception() L1449 Exception on /me [GET] - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask\app.py L1449
+Traceback (most recent call last):
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.ProgrammingError: Error binding parameter 1: type 'dict' is not supported
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask\app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask\app.py", line 1519, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask\app.py", line 1517, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask\app.py", line 1503, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask_openapi3\scaffold.py", line 109, in wrapper
+    resp = _do_wrapper(
+           ^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\flask_openapi3\do_wrapper.py", line 135, in _do_wrapper
+    response = func(**request_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\list_api\app.py", line 94, in get_my_lists
+    lists = session.query(GameList).filter(GameList.user == user).all()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\orm\query.py", line 2772, in all
+    return self._iter().all()
+           ^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\orm\query.py", line 2907, in _iter
+    result = self.session.execute(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (sqlite3.ProgrammingError) Error binding parameter 1: type 'dict' is not supported
+[SQL: SELECT game_list.id AS game_list_id, game_list.name AS game_list_name, game_list.description AS game_list_description, game_list.user AS game_list_user, game_list.is_private AS game_list_is_private, game_list.created AS game_list_created, game_list.updated AS game_list_updated 
+FROM game_list 
+WHERE game_list.user = ?]
+[parameters: ({'username': 'teste'},)]
+(Background on this error at: https://sqlalche.me/e/14/f405)
+[2023-09-25 17:42:11,148] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:42:11] "[35m[1mGET /me HTTP/1.1[0m" 500 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:46:48,321] INFO _log() L224   * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.15.8:5001 (Press CTRL+C to quit) - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:46:50,302] WARNING get_my_lists() L103  Erro buscando listas por usuário, the JSON object must be str, bytes or bytearray, not dict - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\list_api\app.py L103 
+[2023-09-25 17:46:50,304] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:46:50] "[31m[1mGET /me HTTP/1.1[0m" 400 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:01,055] WARNING get_my_lists() L103  Erro buscando listas por usuário, the JSON object must be str, bytes or bytearray, not dict - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\list_api\app.py L103 
+[2023-09-25 17:49:01,056] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:49:01] "[31m[1mGET /me HTTP/1.1[0m" 400 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:08,238] INFO _log() L224   * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.15.8:5001 (Press CTRL+C to quit) - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:10,873] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:49:10] "GET /me HTTP/1.1" 200 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:18,223] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:49:18] "[36mGET /openapi/static/images/swagger.svg HTTP/1.1[0m" 304 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:20,315] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:49:20] "[36mGET /openapi/static/images/swagger.svg HTTP/1.1[0m" 304 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:25,881] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:49:25] "[36mGET /openapi/static/images/swagger.svg HTTP/1.1[0m" 304 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:29,967] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:49:29] "GET /:id?id=1 HTTP/1.1" 200 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:49:32,605] WARNING get_list() L118  Erro ao buscar lista #'2', Lista não encontrado na base :/ - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\list_api\app.py L118 
+[2023-09-25 17:49:32,606] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:49:32] "[33mGET /:id?id=2 HTTP/1.1[0m" 404 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:50:36,043] INFO _log() L224   * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.15.8:5001 (Press CTRL+C to quit) - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
+[2023-09-25 17:50:38,012] WARNING get_list() L118  Erro ao buscar lista #'2', Lista não encontrada - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\list_api\app.py L118 
+[2023-09-25 17:50:38,016] INFO _log() L224  127.0.0.1 - - [25/Sep/2023 17:50:38] "[33mGET /:id?id=2 HTTP/1.1[0m" 404 - - call_trace=C:\Users\Lucas\dev\Pos Eng Soft Puc RJ\mvp-2\user_api\env\Lib\site-packages\werkzeug\_internal.py L224 
