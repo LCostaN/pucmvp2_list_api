@@ -1,51 +1,118 @@
 from pydantic import BaseModel, Field
-from model import GameList
+from model import GameList, Game
 from typing import Optional, List
 
 
 class GameListSchema(BaseModel):
     """ Define como uma nova lista de jogos deve ser representada
     """
-    date: str = Field(title="Vaga", description="Data e Hora do gameList", default="12/07/2023 08:30")
-    name: str = Field(title="Nome Pet", description="Nome do Pet", default="Rex")
-    src: Optional[str] = Field(title="Foto Pet", description="Imagem do Pet (URL)", default="https://placehold.co/600x400")
+    name: str = Field(title="Nome", description="Nome da Lista")
+    user: str = Field(title="Usuário", description="Nome do Usuário criador")
+    description: Optional[str] = Field(
+        title="Descrição", description="Descrição da Lista")
+    is_private: bool = Field(
+        title="Privacidade", description="Define se a lista pode ser visualizada por outros usuário ou somente o criador")
+
 
 class GameListViewSchema(BaseModel):
     """ Define como uma lista de jogos será retornada
     """
-    id: int = Field(title="Id", description="Id do gameList", default="1")
-    date: str = Field(title="Vaga", description="Data e Hora do gameList", default="12/07/2023 08:30")
-    name: str = Field(title="Nome Pet", description="Nome do Pet", default="Rex")
-    src: str = Field(title="Foto Pet", description="Imagem do Pet (URL)", default="https://placehold.co/600x400")
+    id: int = Field(title="ID", description="ID da lista")
+    name: str = Field(title="Nome", description="Nome da Lista")
+    user: str = Field(title="Usuário", description="Nome do Usuário criador")
+    is_private: bool = Field(
+        title="Privacidade", description="Define se a lista pode ser visualizada por outros usuário ou somente o criador")
+    description: Optional[str] = Field(
+        title="Descrição", description="Descrição da Lista")
+    games: List = Field(
+        title='Jogos', description="Jogos incluídos na lista", default=[])
 
-    
-class ListSearchSchema(BaseModel):
-    """ Define os parâmetros de busca da listagem de listas de jogos
+
+class GameListUpdateQuerySchema(BaseModel):
+    """ Define os parâmetros de busca para atualizar uma lista de jogos.
+    Os parâmetros dos campos de atualização da lista são definidos em [GameListUpdateBodySchema]
     """
+    id: int = Field(title="ID", description="ID da lista")
+
+
+class GameListUpdateBodySchema(BaseModel):
+    """ Define os parâmetros de atualização de uma lista de jogos.
+    Os parâmetros de busca da lista a ser atualizada são definidos em [GameListUpdateQuerySchema]
+    """
+    name: Optional[str] = Field(title="Nome", description="Nome da Lista")
+    description: Optional[str] = Field(
+        title="Descrição", description="Descrição da Lista")
+    is_private: Optional[bool] = Field(
+        title="Privacidade", description="Define se a lista pode ser visualizada por outros usuário ou somente o criador")
+    games: Optional[List] = Field(
+        title='Jogos', description="Jogos incluídos na lista", default=[])
+
+
+class GameListDeleteSchema(BaseModel):
+    """ Define os parâmetros para apagar uma lista de jogos
+    """
+    id: int = Field(title="ID", description="ID da lista")
+
+
+class GameListSearchSchema(BaseModel):
+    """ Define os parâmetros de busca para listas de jogos
+    """
+    id: int = Field(title="ID", description="ID da lista")
+
+
+class MyGameListSearchSchema(BaseModel):
+    """ Define os parâmetros de busca para as listas de jogos do usuário
+    """
+    user: str = Field(title="Usuário", description="Nome do Usuário criador")
+
 
 class GameListListSchema(BaseModel):
     """ Define como uma listagem de lista de jogos será retornada.
     """
     data: List[GameListViewSchema]
 
-def present_list(lists: List[GameList]):
+
+def show_lists(lists: List[GameList]):
     """ Retorna uma representação das listas de jogos seguindo o schema definido em
         GameListViewSchema.
     """
     result = []
     for item in lists:
-        result.append(apresenta_agendamento(item))
+        result.append(show_list(item))
 
-    return {"schedules": result}
+    return {"lists": result}
 
-def apresenta_agendamento(gameList: GameList):
+
+def show_game(game: Game):
+    """ Retorna uma representação do jogo que é incluído nas listas
+    """
+    return {
+        "id": game.id,
+        "title": game.title,
+        "thumbnail": game.thumbnail,
+        "short_description": game.short_description,
+        "game_url": game.game_url,
+        "genre": game.genre,
+        "platform": game.platform,
+        "publisher": game.publisher,
+        "developer": game.developer,
+        "release_date": game.release_date,
+    }
+
+
+def show_list(gamelist: GameList):
     """ Retorna uma representação da Lista de Jogos seguindo o schema definido em
         GameListViewSchema.
     """
-    date = gameList.date.strftime("%d/%m/%Y %H:%M")
+    games = []
+    for item in gamelist.games:
+        games.append(show_game(item))
+
     return {
-            "id": gameList.id,
-            "name": gameList.name,
-            "date": date,
-            "src": gameList.src,
-        }
+        "id": gamelist.id,
+        "name": gamelist.name,
+        "description": gamelist.description,
+        "user": gamelist.user,
+        "is_private": gamelist.is_private,
+        "games": games,
+    }

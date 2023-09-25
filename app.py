@@ -1,178 +1,166 @@
 from flask_openapi3 import OpenAPI, Info, Tag
-from flask import redirect
-from urllib.parse import unquote
-
 from sqlalchemy.exc import IntegrityError
 
-from model import Session, Game, List
+from model import Session, GameList
 from logger import logger
 from schemas import *
 from flask_cors import CORS
-
-from datetime import datetime, timedelta
 
 info = Info(title="Dog Care API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
 CORS(app)
 
 # definindo tags
-home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
-list_tag = Tag(name="Lista de Jogo", description="Adição, visualização e remoção de Lista de Jogos à base")
+list_tag = Tag(name="Lista de Jogo",
+               description="Adição, visualização e remoção de Lista de Jogos à base")
 
-@app.get('/', tags=[home_tag])
-def home():
-    """Redireciona para /openapi, tela que permite a escolha do estilo de documentação.
+
+@app.post('/', tags=[list_tag], responses={"200": GameListViewSchema, "409": ErrorSchema, "400": ErrorSchema})
+def add_list(body: GameListSchema):
+    """Adiciona uma nova Lista de Jogos à base de dados
     """
-    return redirect('/openapi/swagger')
-
-
-@app.post('/product', tags=[list_tag],
-          responses={"200": ProdutoViewSchema, "409": ErrorSchema, "400": ErrorSchema})
-def add_produto(body: ProdutoSchema):
-    """Adiciona um novo Jogo à base de dados
-    """
-    produto = Game(
+    gamelist = GameList(
         name=body.name,
-        category=body.category,
         description=body.description,
-        src=body.src,
-        quantity=body.quantity,
+        user=body.user,
+        is_private=body.is_private,
     )
-    logger.debug(f"Adicionando produto de nome: '{produto.name}'")
+    logger.debug(f"Adicionando lista de nome: '{gamelist.name}'")
     try:
         session = Session()
-        session.add(produto)
+        session.add(gamelist)
         session.commit()
-        logger.debug(f"Adicionado produto de nome: '{produto.name}'")
-        return apresenta_produto(produto), 200
+        logger.debug(f"Adicionado lista de nome: '{gamelist.name}'")
+        return show_list(gamelist), 200
 
     except IntegrityError as e:
-        error_msg = "Jogo de mesmo nome já salvo na base"
-        logger.warning(f"Erro ao adicionar produto '{produto.name}', {error_msg}")
+        error_msg = "Lista de mesmo nome já salvo na base"
+        logger.warning(
+            f"Erro ao adicionar lista '{gamelist.name}', {error_msg}")
         return {"message": error_msg}, 409
 
     except Exception as e:
         error_msg = "Não foi possível salvar novo item"
-        logger.warning(f"Erro ao adicionar produto '{produto.name}', {error_msg}")
+        logger.warning(
+            f"Erro ao adicionar lista '{gamelist.name}', {error_msg}")
         return {"message": error_msg}, 400
 
 
-@app.get('/products', tags=[list_tag],
-         responses={"200": ListagemProdutosSchema, "404": ErrorSchema})
-def get_produtos():
-    """Faz a busca por todos os Produtos cadastrados.
+@app.get('/', tags=[list_tag], responses={"200": GameListListSchema, "404": ErrorSchema})
+def get_lists():
+    """Busca todas as listas públicas. Uma lista é pública quando o valor de is_private é falso.
 
-    Retorna uma representação da listagem de produtos.
+    Retorna uma listagem com o resultado encontrado.
     """
-    logger.debug(f"Coletando produtos ")
+    logger.debug(f"Coletando listas ")
     session = Session()
-    produtos = session.query(Game).all()
+    gamelists = session.query(GameList).filter(
+        GameList.is_private == False).all()
 
-    if not produtos:
-        return {"products": []}, 200
+    if not gamelists:
+        return {"data": []}, 200
     else:
-        logger.debug(f"%d produtos encontrados" % len(produtos))
-        print(produtos)
-        return apresenta_produtos(produtos), 200
+        logger.debug(f"%d listas encontradas" % len(gamelists))
+        print(gamelists)
+        return show_lists(gamelists), 200
 
 
-@app.get('/product', tags=[list_tag],
-         responses={"200": ProdutoViewSchema, "404": ErrorSchema})
-def get_produto(query: ProdutoBuscaSchema):
-    """Faz a busca por um Jogo a partir do id do produto.
+@app.get('/me', tags=[list_tag], responses={"200": GameListSchema, "404": ErrorSchema})
+def get_my_lists(query: MyGameListSearchSchema):
+    """Busca as listas criadas pelo usuário
 
     Retorna uma representação dos produtos.
     """
-    produto_id = query.id
-    logger.debug(f"Coletando dados sobre produto #{produto_id}")
+    user = ''
+    logger.debug(f"Coletando as listas de #{user}")
     session = Session()
-    produto = session.query(Game).filter(Game.id == produto_id).first()
+    lists = session.query(GameList).filter(GameList.user == user).all()
 
-    if not produto:
-        error_msg = "Jogo não encontrado na base :/"
-        logger.warning(f"Erro ao buscar produto '{produto_id}', {error_msg}")
+    if not lists:
+        return {"data": []}, 200
+    else:
+        logger.debug(f"%d listas encontradas" % len(lists))
+        print(lists)
+        return show_lists(lists), 200
+
+
+@app.get('/:id', tags=[list_tag], responses={"200": GameListSchema, "404": ErrorSchema})
+def get_list(query: GameListSearchSchema):
+    """Faz a busca por uma Lista a partir do id.
+
+    Retorna uma representação da lista se ela for pública ou se o usuário for o dono.
+    """
+    id = query.id
+    logger.debug(f"Coletando dados sobre lista #{id}")
+    session = Session()
+    list = session.query(GameList).filter(GameList.id == id).first()
+
+    if not list:
+        error_msg = "Lista não encontrado na base :/"
+        logger.warning(f"Erro ao buscar lista #'{id}', {error_msg}")
         return {"message": error_msg}, 404
     else:
-        logger.debug(f"Jogo encontrado: '{produto.name}'")
-        return apresenta_produto(produto), 200
+        logger.debug(f"Lista encontrada: '{list.name}'")
+        return show_list(list), 200
 
 
-@app.delete('/product', tags=[list_tag],
-            responses={"200": ProdutoDelSchema, "404": ErrorSchema})
-def del_produto(query: ProdutoDelBuscaSchema):
-    """Deleta um Jogo a partir do nome de produto informado
+@app.delete('/:id', tags=[list_tag], responses={"200": {}, "404": ErrorSchema})
+def del_list(query: GameListDeleteSchema):
+    """Deleta uma Lista a partir do id informado
 
-    Retorna uma mensagem de confirmação da remoção.
+    Retorna vazio com status de sucesso.
     """
-    produto_nome = unquote(unquote(query.name))
-    print(produto_nome)
-    logger.debug(f"Deletando dados sobre produto #{produto_nome}")
+    id = query.id
+    logger.debug(f"Deletando lista #{id}")
     session = Session()
-    count = session.query(Game).filter(Game.name == produto_nome).delete()
+    count = session.query(GameList).filter(GameList.id == id).delete()
     session.commit()
 
     if count:
-        logger.debug(f"Deletado produto #{produto_nome}")
-        return {"message": "Jogo removido", "id": produto_nome}
+        logger.debug(f"Lista deletada #{id}")
+        return {}
     else:
-        error_msg = "Jogo não encontrado na base :/"
-        logger.warning(f"Erro ao deletar produto #'{produto_nome}', {error_msg}")
+        error_msg = "Lista não encontrado na base"
+        logger.warning(f"Erro ao deletar produto #'{id}', {error_msg}")
         return {"message": error_msg}, 404
 
 
-@app.post('/schedule', tags=[list_tag],
-          responses={"200": ScheduleViewSchema, "404": ErrorSchema})
-def add_schedule(body: ScheduleSchema):
-    """Adiciona um novo agendamento
+@app.put('/:id', tags=[list_tag], responses={"200": GameListSchema, "404": ErrorSchema})
+def update_list(query: GameListUpdateQuerySchema, body: GameListUpdateBodySchema):
+    """Atualiza a Lista de Jogos identificada pelo id informado, se o usuário for o dono.
 
-    Retorna uma representação do agendamento.
+    Retorna uma representação da Lista.
     """
-    date = datetime.strptime(body.date, "%d/%m/%Y %H:%M")
-    schedule = List(
-        name=body.name,
-        date=date,
-        src=body.src,
-    )
-    logger.debug(f"Adicionando agendamento de '{schedule.name}' no dia e horário '{schedule.date}'")
+    id = query.id
+    logger.debug(f"Atualizando lista #{id}")
     try:
         session = Session()
-        session.add(schedule)
-        session.commit()
-        logger.debug(f"Adicionado agendamento '{schedule.id}'")
-        return apresenta_agendamento(schedule), 200
+        list: GameList = session.query(
+            GameList).filter(GameList.id == id).first()
+
+        if not list:
+            error_msg = "Lista não encontrado na base :/"
+            logger.warning(f"Lista não encontrada: #{id}, {error_msg}")
+            return {"message": error_msg}, 404
+        else:
+            logger.debug(f"Atualizando lista #{id}")
+            list.name = body.name or list.name
+            list.description = body.description or list.description
+            list.is_private = body.is_private or list.is_private
+
+            if body.games:
+                list.games = body.games
+
+            session.commit()
+
+            return show_list(list), 200
 
     except IntegrityError as e:
-        error_msg = "Horário de agendamento não disponível"
-        logger.warning(f"Erro ao adicionar agendamento '{schedule}', {error_msg}")
+        logger.warning(
+            f"Erro ao atualizar lista #{id}, {e}")
         return {"message": error_msg}, 409
 
     except Exception as e:
-        error_msg = "Não foi possível salvar novo item"
-        logger.error(f"Erro ao adicionar agendamento', {e}")
-        return {"message": error_msg}, 400
-
-
-@app.get('/schedules', tags=[list_tag],
-         responses={"200": ScheduleListSchema, "404": ErrorSchema})
-def get_schedules(query: ScheduleListSearchSchema):
-    """Faz a busca pelos Agendamentos cadastrados a partir da data informada até os próximos 7 dias.
-
-    Retorna uma representação da listagem de agendamentos.
-    """
-    try:
-        initialDate = datetime.strptime(query.date, "%d/%m/%Y")
-        finalDate = initialDate + timedelta(days = 8)
-        logger.debug(f"Coletando agendamentos ")
-        session = Session()
-        schedules = session.query(List).filter(List.date >= initialDate,List.date < finalDate).all()
-
-        if not schedules:
-            return {"schedules": []}, 200
-        else:
-            logger.debug(f"%d agendamentos encontrados" % len(schedules))
-            return apresenta_agendamentos(schedules), 200
-    
-    except Exception as e:
-        logger.error(e)
-        error_msg = f"Não foi possível buscar os agendamentos a partir de {query.date}"
+        error_msg = "Não foi possível atualizar a lista"
+        logger.error(f"Erro ao atualizar lista #{id}', {e}")
         return {"message": error_msg}, 400
