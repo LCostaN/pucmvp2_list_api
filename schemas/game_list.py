@@ -81,7 +81,7 @@ def show_lists(lists: List[GameList]):
     for item in lists:
         result.append(show_list(item))
 
-    return {"lists": result}
+    return {"data": result}
 
 
 def show_game(game: Game):
