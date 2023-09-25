@@ -6,14 +6,13 @@ from logger import logger
 from schemas import *
 from flask_cors import CORS
 
-info = Info(title="Dog Care API", version="1.0.0")
+info = Info(title="Game List API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
 CORS(app)
 
 # definindo tags
 list_tag = Tag(name="Lista de Jogo",
                description="Adição, visualização e remoção de Lista de Jogos à base")
-
 
 @app.post('/', tags=[list_tag], responses={"200": GameListViewSchema, "409": ErrorSchema, "400": ErrorSchema})
 def add_list(body: GameListSchema):
