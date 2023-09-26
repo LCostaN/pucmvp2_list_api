@@ -11,9 +11,10 @@ Esta API não autentica usuários.
 
 Para executar o projeto, é necessário usar a ferramenta docker e criar o container. O Dockerfile já está configurado e só é necessário rodar os comandos:
 
-`docker build -t mvp2_list_api .`
-
-`docker run -d --name mvp2_list_api -p 5001:5000 mvp2_list_api`
+```sh
+docker build -t mvp2_list_api .
+docker run -d --rm --name mvp2_list_api -p 5001:5000 mvp2_list_api
+```
 
 ## Rotas
 
