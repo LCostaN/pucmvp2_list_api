@@ -3,6 +3,11 @@ from model import GameList, Game
 from typing import Optional, List
 
 
+class GameListByIdSchema(BaseModel):
+    """Define parâmetro de busca por id
+    """
+    id: int = Field(description="ID da Lista")
+
 class GameListSchema(BaseModel):
     """ Define como uma nova lista de jogos deve ser representada
     """
@@ -32,33 +37,13 @@ class GameListDeleteViewSchema(BaseModel):
     data: bool = Field(title="Sucesso")
 
 
-class GameListUpdateQuerySchema(BaseModel):
-    """ Define os parâmetros de busca para atualizar uma lista de jogos.
-    Os parâmetros dos campos de atualização da lista são definidos em [GameListUpdateBodySchema]
-    """
-    id: int = Field(title="ID", description="ID da lista")
-
-
 class GameListUpdateBodySchema(BaseModel):
     """ Define os parâmetros de atualização de uma lista de jogos.
-    Os parâmetros de busca da lista a ser atualizada são definidos em [GameListUpdateQuerySchema]
     """
     name: Optional[str] = Field(title="Nome", description="Nome da Lista")
     description: Optional[str] = Field(title="Descrição", description="Descrição da Lista")
     is_private: Optional[bool] = Field(title="Privacidade", description="Define se a lista pode ser visualizada por outros usuário ou somente o criador")
     games: Optional[List] = Field(title='Jogos', description="Jogos incluídos na lista")
-
-
-class GameListDeleteSchema(BaseModel):
-    """ Define os parâmetros para apagar uma lista de jogos
-    """
-    id: int = Field(title="ID", description="ID da lista")
-
-
-class GameListSearchSchema(BaseModel):
-    """ Define os parâmetros de busca para listas de jogos
-    """
-    id: int = Field(title="ID", description="ID da lista")
 
 
 class MyGameListSearchSchema(BaseModel):

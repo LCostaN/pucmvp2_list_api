@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Text, String, Integer, DateTime
+from sqlalchemy import Column, Text, String, Integer
 
 from model import Base
 
@@ -14,7 +14,7 @@ class Game(Base):
     platform= Column(String(255))
     publisher= Column(String(255))
     developer= Column(String(255))
-    release_date= Column(DateTime)
+    release_date= Column(String(11))
 
     def __init__(self,
                  id: int,
